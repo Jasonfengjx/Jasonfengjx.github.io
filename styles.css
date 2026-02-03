@@ -635,3 +635,226 @@ body {
         font-size: 2rem;
     }
 }
+
+/* ==================== 关于页面 ==================== */
+.about-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.about-section {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.about-section h2 {
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.5rem;
+}
+
+/* 单栏目 About 页面布局 */
+.about-content.single-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+.about-item {
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+}
+
+.about-item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.about-item summary::-webkit-details-marker { display:none; }
+
+.about-item summary::after {
+    content: '\25BE';
+    margin-left: auto;
+    color: var(--accent-color);
+    font-size: 0.85rem;
+    transition: transform 0.25s ease;
+}
+
+.about-item[open] summary::after {
+    transform: rotate(180deg);
+}
+
+.about-body {
+    margin-top: 0.75rem;
+    color: var(--text-primary);
+    line-height: 1.7;
+}
+
+@media (min-width: 900px) {
+    .about-container { max-width: 900px; }
+}
+
+/* 时间线样式 */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.4rem; /* 2rem padding + 0.4rem offset */
+    top: 0.3rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    border: 3px solid var(--bg-secondary);
+    box-shadow: 0 0 0 1px var(--border-color);
+}
+
+.timeline-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    margin-bottom: 0.8rem;
+}
+
+.timeline-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.timeline-header .company {
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.timeline-header .date {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+}
+
+.timeline-content h4 {
+    margin: 0.5rem 0;
+    color: var(--accent-color);
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.timeline-content p {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    text-align: justify;
+    line-height: 1.7;
+}
+
+/* 项目卡片 */
+.project-item {
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+    background-color: var(--bg-primary); /* 轻微背景区别 */
+}
+
+.project-item:hover {
+    border-color: var(--accent-color);
+    background-color: var(--bg-secondary);
+    box-shadow: var(--shadow-md);
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1rem;
+}
+
+.project-title {
+    flex: 1;
+}
+
+.project-title h3 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.2rem;
+}
+
+.project-badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    background-color: var(--accent-color);
+    color: #fff;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.project-detail {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.project-detail strong {
+    color: var(--accent-color);
+    font-weight: 600;
+    margin-right: 0.3rem;
+}
+
+@media (max-width: 768px) {
+    .timeline-header {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+    
+    .timeline-header .date {
+        margin-left: 0;
+    }
+}

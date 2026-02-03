@@ -9,18 +9,19 @@ class BlogDatabase {
 
     // 初始化默认数据
     async initDefaultData() {
-        if (!localStorage.getItem(this.storageKey)) {
-            try {
-                const response = await fetch('posts/metadata.json');
-                const defaultBlogs = await response.json();
-                this.setBlogs(defaultBlogs);
-                // 重新派发事件通知数据已加载
-                window.dispatchEvent(new Event('blogsLoaded'));
-            } catch (error) {
-                console.error('Failed to load blog metadata:', error);
+        // 总是尝试获取最新的 metadata
+        try {
+            const response = await fetch('posts/metadata.json');
+            const defaultBlogs = await response.json();
+            this.setBlogs(defaultBlogs);
+            window.dispatchEvent(new Event('blogsLoaded'));
+        } catch (error) {
+            console.error('Failed to load blog metadata:', error);
+            // 如果 fetch 失败，且本地没有数据，才属于真正的失败
+            if (!localStorage.getItem(this.storageKey)) {
+                this.setBlogs([]); 
             }
-        } else {
-             window.dispatchEvent(new Event('blogsLoaded'));
+            window.dispatchEvent(new Event('blogsLoaded'));
         }
     }
 
@@ -38,13 +39,18 @@ class BlogDatabase {
     // 根据ID获取单个博客，如果内容不存在则加载内容
     async getBlogById(id) {
         const blogs = this.getBlogs();
-        const blog = blogs.find(blog => blog.id === parseInt(id));
+        const blog = blogs.find(blog => blog.id == id);
         
         if (blog && !blog.content && blog.contentPath) {
              try {
                 const response = await fetch(blog.contentPath);
-                const data = await response.json();
-                blog.content = data.content;
+                if (blog.contentPath.endsWith('.html')) {
+                    blog.content = await response.text();
+                } else {
+                    const data = await response.json();
+                    blog.content = data.content;
+                }
+                
                 // 更新localStorage中的缓存（可选，或者每次都重新获取）
                 // 这里选择不更新localStorage的content，以保持元数据轻量，
                 // 仅返回带有content的对象
@@ -201,6 +207,8 @@ class BlogApp {
         // 加载页面特定内容
         if (page === 'home') {
             this.loadBlogList();
+        } else if (page === 'about') {
+            this.loadSpecialPage('about');
         } else if (page === 'essays') {
             this.loadCategoryList('随笔', 'essaysList');
         } else if (page === 'engineering') {
@@ -212,9 +220,59 @@ class BlogApp {
         window.location.hash = `#/${page === 'home' ? '' : page}`;
     }
 
+    // 加载特殊页面（如About）- 使用全局JS变量
+    loadSpecialPage(pageId) {
+        const container = document.getElementById(`${pageId}-page`);
+        if (container && window.pageContents && window.pageContents[pageId]) {
+            container.innerHTML = window.pageContents[pageId];
+            // Safari/部分浏览器对 <details>/<summary> 的行为可能不一致。
+            // 在插入 HTML 后增强 details 行为，确保 summary 点击可切换 open 状态。
+            try {
+                this.enhanceDetails(container);
+            } catch (e) {
+                console.warn('enhanceDetails failed:', e);
+            }
+        }
+    }
+
+    // 增强 <details>/<summary> 在不同浏览器中的行为（Safari 兼容性回退）
+    enhanceDetails(root) {
+        if (!root) return;
+        const detailsList = root.querySelectorAll('details');
+        detailsList.forEach(d => {
+            const summary = d.querySelector('summary');
+            if (!summary) return;
+
+            // 如果浏览器原生支持 details，但 Safari 某些版本对 innerHTML 动态插入后的交互有问题，添加点击处理器作为回退。
+            // 该处理器仅在 summary 点击时切换 open 属性，不阻断默认键盘交互。
+            summary.addEventListener('click', (ev) => {
+                // 在某些情况下事件会在内部元素上触发，确保目标在 summary 中
+                if (!summary.contains(ev.target)) return;
+                // 切换 open 状态
+                try {
+                    d.open = !d.open;
+                } catch (e) {
+                    // 忽略错误
+                }
+            });
+
+            // 确保折叠内容初始化样式正确（部分浏览器需要显式隐藏）
+            const body = Array.from(d.children).find(c => c.tagName.toLowerCase() !== 'summary');
+            if (body) {
+                // 使用 aria 隐藏以提高可访问性
+                body.setAttribute('aria-hidden', d.hasAttribute('open') ? 'false' : 'true');
+                // 监听 open 属性变化，保持 aria-hidden 同步
+                const observer = new MutationObserver(() => {
+                    body.setAttribute('aria-hidden', d.hasAttribute('open') ? 'false' : 'true');
+                });
+                observer.observe(d, { attributes: true, attributeFilter: ['open'] });
+            }
+        });
+    }
+
     // 加载分类列表
     loadCategoryList(category, elementId) {
-        const blogs = this.db.getBlogs().filter(blog => blog.category === category);
+        const blogs = this.db.getBlogs().filter(blog => blog.category === category && blog.type !== 'page');
         const container = document.getElementById(elementId);
         container.innerHTML = '';
 
@@ -231,7 +289,7 @@ class BlogApp {
 
     // 加载博客列表
     loadBlogList() {
-        const blogs = this.db.getBlogs();
+        const blogs = this.db.getBlogs().filter(blog => blog.type !== 'page');
         const blogList = document.getElementById('blogList');
         blogList.innerHTML = '';
 
