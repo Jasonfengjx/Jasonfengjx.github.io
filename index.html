@@ -54,7 +54,19 @@
 
             <!-- 博客列表 -->
             <div id="blogList" class="blog-grid">
-                <!-- 动态生成的博客卡片 -->
+                <!-- 静态博客卡片 -->
+                <div class="blog-card" onclick="window.location.hash='#/blog/1'">
+                    <div class="blog-card-image">📰</div>
+                    <div class="blog-card-content">
+                        <h3 class="blog-card-title">Welcome to My Blog</h3>
+                        <span class="blog-card-category">生活</span>
+                        <p class="blog-card-excerpt">这是我的第一篇博客，标志着我建立了个人网站。这里将分享我的技术见解和生活感悟。</p>
+                        <div class="blog-card-meta">
+                            <span>📅 2026-02-03</span>
+                            <span>⏱️ 3 min read</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -269,6 +281,35 @@
     <div id="toast" class="toast"></div>
 
     <!-- 页面内容脚本 -->
+    <script>
+        // 内置博客数据源
+        window.BLOG_DATA = [
+            {
+                "id": 1,
+                "title": "Welcome to My Blog",
+                "excerpt": "这是我的第一篇博客，标志着我建立了个人网站。这里将分享我的技术见解和生活感悟。",
+                "date": "2026-02-03",
+                "category": "生活",
+                "tags": ["欢迎", "随笔"],
+                "content": `
+                    <div class="blog-content">
+                        <p>你好！欢迎来到我的个人博客。</p>
+                        <p>这是一个使用原生 HTML/CSS/JS 构建的简单博客系统。我将在这里记录我的学习历程、技术分享以及生活点滴。</p>
+                        
+                        <h3>关于本站</h3>
+                        <p>本站旨在作为一个简洁的展示平台，分享关于：</p>
+                        <ul>
+                            <li>大模型 (LLM) 技术</li>
+                            <li>AI for Science</li>
+                            <li>搜索推荐算法</li>
+                            <li>日常生活思考</li>
+                        </ul>
+                        <p>感谢你的访问！</p>
+                    </div>
+                `.trim()
+            }
+        ];
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

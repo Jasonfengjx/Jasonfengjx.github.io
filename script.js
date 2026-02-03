@@ -4,52 +4,15 @@ class BlogDatabase {
         this.storageKey = 'blogs';
         this.commentsKey = 'comments';
         this.contactsKey = 'contacts';
-        this.initDefaultData();
-    }
-
-    // 初始化默认数据
-    async initDefaultData() {
-        // 内置默认博客数据
-        const defaultBlogs = [
-            {
-                "id": 1,
-                "title": "Welcome to My Blog",
-                "excerpt": "这是我的第一篇博客，标志着我建立了个人网站。这里将分享我的技术见解和生活感悟。",
-                "date": "2026-02-03",
-                "category": "生活",
-                "tags": ["欢迎", "随笔"],
-                "content": `
-                    <div class="blog-content">
-                        <p>你好！欢迎来到我的个人博客。</p>
-                        <p>这是一个使用原生 HTML/CSS/JS 构建的简单博客系统。我将在这里记录我的学习历程、技术分享以及生活点滴。</p>
-                        
-                        <h3>关于本站</h3>
-                        <p>本站旨在作为一个简洁的展示平台，分享关于：</p>
-                        <ul>
-                            <li>大模型 (LLM) 技术</li>
-                            <li>AI for Science</li>
-                            <li>搜索推荐算法</li>
-                            <li>日常生活思考</li>
-                        </ul>
-                        <p>感谢你的访问！</p>
-                    </div>
-                `.trim()
-            }
-        ];
-
-        // 如果没有本地数据，或者为了演示总是重置（这里保留本地数据的逻辑）
-        if (!localStorage.getItem(this.storageKey)) {
-            this.setBlogs(defaultBlogs);
-        }
-        // 为了确保最新代码生效，这里强制更新一下（如果只是开发阶段）
-        // 实际使用时，可能希望保留用户更改，但既然删除了posts文件夹，我们假设使用内置数据
-        this.setBlogs(defaultBlogs); 
-        
-        window.dispatchEvent(new Event('blogsLoaded'));
+        // 不再进行初始化数据的写入
     }
 
     // 获取所有博客
     getBlogs() {
+        // 优先读取 HTML 中定义的全局数据，如果没有则尝试 localStorage，最后返回空数组
+        if (window.BLOG_DATA) {
+            return window.BLOG_DATA;
+        }
         const data = localStorage.getItem(this.storageKey);
         return data ? JSON.parse(data) : [];
     }
@@ -174,21 +137,6 @@ class BlogApp {
 
     // 加载页面
     async loadPage(page) {
-        // 确保数据已加载
-        if (!this.db.getBlogs().length) {
-            await new Promise(resolve => {
-                const handler = () => {
-                   window.removeEventListener('blogsLoaded', handler);
-                   resolve();
-               };
-                if (this.db.getBlogs().length) {
-                    resolve();
-                } else {
-                    window.addEventListener('blogsLoaded', handler);
-                }
-            });
-        }
-
         // 移除所有活跃类
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
