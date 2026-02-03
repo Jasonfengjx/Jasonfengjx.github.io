@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客 - Blog Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">📝 MyBlog</div>
+            <ul class="nav-menu">
+                <li><a href="#/" class="nav-link active" data-page="home">首页</a></li>
+                <li><a href="#/essays" class="nav-link" data-page="essays">随笔</a></li>
+                <li><a href="#/engineering" class="nav-link" data-page="engineering">工程</a></li>
+                <li><a href="#/research" class="nav-link" data-page="research">科研</a></li>
+                <li><a href="#/about" class="nav-link" data-page="about">关于</a></li>
+                <li><a href="#/contact" class="nav-link" data-page="contact">联系</a></li>
+                <li>
+                    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                        <span class="theme-icon">🌙</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <main class="container">
+        <!-- 首页 -->
+        <section id="home-page" class="page active">
+            <div class="page-header">
+                <h1>欢迎来到我的博客</h1>
+                <p class="subtitle">分享技术、生活和想法</p>
+            </div>
+
+            <!-- 搜索和筛选 -->
+            <div class="filter-section">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="搜索博客..."
+                >
+                <select id="categoryFilter" class="category-filter">
+                    <option value="">所有分类</option>
+                    <option value="技术">技术</option>
+                    <option value="生活">生活</option>
+                    <option value="旅游">旅游</option>
+                </select>
+            </div>
+
+            <!-- 博客列表 -->
+            <div id="blogList" class="blog-grid">
+                <!-- 动态生成的博客卡片 -->
+            </div>
+        </section>
+
+        <!-- 博客详情页 -->
+        <section id="detail-page" class="page">
+            <button class="back-btn" id="backBtn">← 返回</button>
+            <article id="blogDetail" class="blog-detail">
+                <!-- 动态生成的详情内容 -->
+            </article>
+            
+            <!-- 评论部分 -->
+            <section class="comments-section">
+                <h3>评论 (<span id="commentCount">0</span>)</h3>
+                
+                <!-- 评论表单 -->
+                <form id="commentForm" class="comment-form">
+                    <input 
+                        type="text" 
+                        id="commenterName" 
+                        placeholder="您的名字" 
+                        required
+                        class="form-input"
+                    >
+                    <textarea 
+                        id="commentText" 
+                        placeholder="写下您的评论..." 
+                        required
+                        class="form-textarea"
+                    ></textarea>
+                    <button type="submit" class="btn btn-primary">发表评论</button>
+                </form>
+
+                <!-- 评论列表 -->
+                <div id="commentsList" class="comments-list">
+                    <!-- 动态生成的评论 -->
+                </div>
+            </section>
+        </section>
+
+        <!-- 随笔页面 -->
+        <section id="essays-page" class="page">
+            <div class="page-header">
+                <h1>✍️ 随笔</h1>
+                <p class="subtitle">生活点滴、感悟思考</p>
+            </div>
+            <div id="essaysList" class="blog-grid">
+                <!-- 动态生成的随笔 -->
+            </div>
+        </section>
+
+        <!-- 工程页面 -->
+        <section id="engineering-page" class="page">
+            <div class="page-header">
+                <h1>🔧 工程</h1>
+                <p class="subtitle">项目实战、技术总结</p>
+            </div>
+            <div id="engineeringList" class="blog-grid">
+                <!-- 动态生成的工程文章 -->
+            </div>
+        </section>
+
+        <!-- 科研页面 -->
+        <section id="research-page" class="page">
+            <div class="page-header">
+                <h1>🔬 科研</h1>
+                <p class="subtitle">学术研究、论文分享</p>
+            </div>
+            <div id="researchList" class="blog-grid">
+                <!-- 动态生成的科研文章 -->
+            </div>
+        </section>
+
+        <!-- 关于页面 -->
+        <section id="about-page" class="page">
+            <div class="about-container">
+                <h1>关于我</h1>
+                <div class="about-content">
+                    <div class="about-avatar">👤</div>
+                    <div class="about-text">
+                        <h2>欢迎！</h2>
+                        <p>我是一名热爱编程和分享的开发者。这个博客记录了我在技术、生活和旅游中的所有想法和经历。</p>
+                        <p>通过这个平台，我希望能与各位分享知识，互相学习和成长。</p>
+                        <h3>兴趣爱好</h3>
+                        <ul>
+                            <li>🔧 Web开发（HTML, CSS, JavaScript）</li>
+                            <li>📚 技术写作和分享</li>
+                            <li>✈️ 旅游和探险</li>
+                            <li>🎮 游戏和动画</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系页面 -->
+        <section id="contact-page" class="page">
+            <div class="contact-container">
+                <h1>联系我</h1>
+                <p class="contact-intro">有问题或建议？请填写下方表单与我联系</p>
+                
+                <form id="contactForm" class="contact-form">
+                    <div class="form-group">
+                        <label for="contactName">姓名</label>
+                        <input 
+                            type="text" 
+                            id="contactName" 
+                            required
+                            class="form-input"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactEmail">邮箱</label>
+                        <input 
+                            type="email" 
+                            id="contactEmail" 
+                            required
+                            class="form-input"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactSubject">主题</label>
+                        <input 
+                            type="text" 
+                            id="contactSubject" 
+                            required
+                            class="form-input"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactMessage">消息</label>
+                        <textarea 
+                            id="contactMessage" 
+                            rows="6"
+                            required
+                            class="form-textarea"
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">发送消息</button>
+                </form>
+
+                <!-- 联系方式 -->
+                <div class="contact-info">
+                    <h3>其他联系方式</h3>
+                    <p>📧 Email: contact@myblog.com</p>
+                    <p>🐦 Twitter: @myblog</p>
+                    <p>💼 LinkedIn: /in/myblog</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast提示 -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
