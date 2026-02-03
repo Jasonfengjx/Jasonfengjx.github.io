@@ -9,20 +9,43 @@ class BlogDatabase {
 
     // 初始化默认数据
     async initDefaultData() {
-        // 总是尝试获取最新的 metadata
-        try {
-            const response = await fetch('posts/metadata.json');
-            const defaultBlogs = await response.json();
-            this.setBlogs(defaultBlogs);
-            window.dispatchEvent(new Event('blogsLoaded'));
-        } catch (error) {
-            console.error('Failed to load blog metadata:', error);
-            // 如果 fetch 失败，且本地没有数据，才属于真正的失败
-            if (!localStorage.getItem(this.storageKey)) {
-                this.setBlogs([]); 
+        // 内置默认博客数据
+        const defaultBlogs = [
+            {
+                "id": 1,
+                "title": "Welcome to My Blog",
+                "excerpt": "这是我的第一篇博客，标志着我建立了个人网站。这里将分享我的技术见解和生活感悟。",
+                "date": "2026-02-03",
+                "category": "生活",
+                "tags": ["欢迎", "随笔"],
+                "content": `
+                    <div class="blog-content">
+                        <p>你好！欢迎来到我的个人博客。</p>
+                        <p>这是一个使用原生 HTML/CSS/JS 构建的简单博客系统。我将在这里记录我的学习历程、技术分享以及生活点滴。</p>
+                        
+                        <h3>关于本站</h3>
+                        <p>本站旨在作为一个简洁的展示平台，分享关于：</p>
+                        <ul>
+                            <li>大模型 (LLM) 技术</li>
+                            <li>AI for Science</li>
+                            <li>搜索推荐算法</li>
+                            <li>日常生活思考</li>
+                        </ul>
+                        <p>感谢你的访问！</p>
+                    </div>
+                `.trim()
             }
-            window.dispatchEvent(new Event('blogsLoaded'));
+        ];
+
+        // 如果没有本地数据，或者为了演示总是重置（这里保留本地数据的逻辑）
+        if (!localStorage.getItem(this.storageKey)) {
+            this.setBlogs(defaultBlogs);
         }
+        // 为了确保最新代码生效，这里强制更新一下（如果只是开发阶段）
+        // 实际使用时，可能希望保留用户更改，但既然删除了posts文件夹，我们假设使用内置数据
+        this.setBlogs(defaultBlogs); 
+        
+        window.dispatchEvent(new Event('blogsLoaded'));
     }
 
     // 获取所有博客
@@ -36,30 +59,10 @@ class BlogDatabase {
         localStorage.setItem(this.storageKey, JSON.stringify(blogs));
     }
 
-    // 根据ID获取单个博客，如果内容不存在则加载内容
+    // 根据ID获取单个博客
     async getBlogById(id) {
         const blogs = this.getBlogs();
         const blog = blogs.find(blog => blog.id == id);
-        
-        if (blog && !blog.content && blog.contentPath) {
-             try {
-                const response = await fetch(blog.contentPath);
-                if (blog.contentPath.endsWith('.html')) {
-                    blog.content = await response.text();
-                } else {
-                    const data = await response.json();
-                    blog.content = data.content;
-                }
-                
-                // 更新localStorage中的缓存（可选，或者每次都重新获取）
-                // 这里选择不更新localStorage的content，以保持元数据轻量，
-                // 仅返回带有content的对象
-                return blog;
-            } catch (error) {
-                console.error('Failed to load blog content:', error);
-                return blog;
-            }
-        }
         return blog;
     }
 
@@ -337,12 +340,15 @@ class BlogApp {
 
         // 填充详情内容
         const detailContainer = document.getElementById('blogDetail');
+        const author = blog.author || 'Feng';
+        const readTime = blog.readTime || '3 min read';
+        
         detailContainer.innerHTML = `
             <h1>${this.escapeHtml(blog.title)}</h1>
             <div class="blog-detail-meta">
-                <span>✍️ 作者: ${blog.author}</span>
+                <span>✍️ 作者: ${author}</span>
                 <span>📅 ${blog.date}</span>
-                <span>⏱️ ${blog.readTime}</span>
+                <span>⏱️ ${readTime}</span>
                 <span>🏷️ ${blog.category}</span>
             </div>
             <div class="blog-detail-content">
@@ -519,28 +525,10 @@ class BlogApp {
         return text ? text.replace(/[&<>"']/g, m => map[m]) : '';
     }
 
-    // 渲染内容（由于支持简单Markdown语法）
+    // 渲染内容（直接返回HTML内容，不再转义，因为内容是内置的可信HTML）
     renderContent(content) {
         if (!content) return '<p>内容加载中...</p>';
-        
-        let safeContent = this.escapeHtml(content);
-
-        // 1. 解析图片语法 ![alt](url)
-        safeContent = safeContent.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
-            return `<img src="${url}" alt="${alt}" class="blog-content-img" loading="lazy">`;
-        });
-
-        // 2. 解析换行符为段落
-        // 将连续的换行符视为段落分隔
-        return safeContent.split('\n').map(line => {
-            line = line.trim();
-            if (!line) return '';
-            // 如果该行已经是简单的HTML标签（比如刚才替换的img），则不包裹p
-            if (line.startsWith('<img') && line.endsWith('>')) {
-                return `<div class="blog-img-wrapper">${line}</div>`;
-            }
-            return `<p>${line}</p>`;
-        }).join('');
+        return content;
     }
 
     // 验证邮箱
