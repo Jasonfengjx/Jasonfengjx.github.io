@@ -310,6 +310,12 @@ class BlogApp {
         // 加载评论
         this.loadComments(blogId);
 
+        // 如果 MathJax 已加载，重新渲染公式
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise([detailContainer])
+                .catch(err => console.log('MathJax rendering failed:', err));
+        }
+
         window.location.hash = `#/blog/${blogId}`;
     }
 

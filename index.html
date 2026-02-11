@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的博客 - Blog Platform</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- MathJax for LaTeX support -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
     <!-- 导航栏 -->
@@ -410,6 +421,79 @@
 
                         <h2>五、 总结</h2>
                         <p><code>OneTrans</code> 是一个聪明的深度学习模型。它既有 Transformer 的深邃思考能力，能捕捉复杂的用户行为模式；又有“金字塔收缩”这样的工程智慧，解决了算力瓶颈。它是推荐系统背后，那个默默理解你、为你服务的“数字大脑”。</p>
+                    </div>
+                `.trim()
+            },
+            {
+                "id": 3,
+                "title": "论文阅读系列笔记1—《SwinIR: Image Restoration Using Swin Transformer》",
+                "excerpt": "图像修复是计算机视觉中的经典课题。SwinIR创新性地融合Swin Transformer的层次化注意力机制与CNN的归纳偏置，为图像修复开辟新路径。",
+                "date": "2026-02-11",
+                "category": "科研",
+                "tags": ["科研", "SwinIR", "图像修复", "DL"],
+                "content": `
+                    <div class=\"blog-content\">
+                        <blockquote>
+                            <p><strong>导读</strong>：图像修复是计算机视觉中的经典课题，旨在从低质量图像（如模糊、噪声或压缩失真）中恢复出高质量细节。传统CNN方法受限于局部感受野与内容无关的卷积核，难以有效建模长距离依赖；而Vision Transformer（ViT）虽具备全局建模能力，但其固定分块策略易导致块间边界伪影。SwinIR创新性地融合Swin Transformer的层次化注意力机制与CNN的归纳偏置，为图像修复开辟新路径。</p>
+                        </blockquote>
+                        <hr>
+
+                        <h2>方法设计：三阶段架构与关键公式</h2>
+                        <p>SwinIR采用三阶段级联架构，各阶段数学表达如下：</p>
+
+                        <h3>1. 浅层特征提取</h3>
+                        <p>通过单层卷积将输入图像映射至高维特征空间，保留低频结构信息：</p>
+                        <p style=\"text-align: center;\">
+                            $$F_0 = H_{conv}(I_{LQ}) \\tag{1}$$
+                        </p>
+                        <p>其中 $I_{LQ} \\in \\mathbb{R}^{H \\times W \\times 3}$ 为低质量输入，$H_{conv}$ 为 $3 \\times 3$ 卷积，$F_0 \\in \\mathbb{R}^{H \\times W \\times C}$ 为浅层特征。</p>
+
+                        <h3>2. 深层特征提取</h3>
+                        <p>核心为 $K$ 个残差Swin Transformer块（RSTB）的堆叠，每个RSTB包含 $L$ 个Swin Transformer层（STL）：</p>
+                        <p style=\"text-align: center;\">
+                            $$F_k = \\text{RSTB}_k(F_{k-1}) + F_{k-1}, \\quad k=1, 2, ..., K \\tag{2}$$
+                        </p>
+                        <p>单个STL的计算流程为：</p>
+                        <p style=\"text-align: center;\">
+                            $$\\begin{aligned} \\hat{Z} &= \\text{MSA}(\\text{LayerNorm}(Z)) + Z \\\\ Z_{out} &= \\text{MLP}(\\text{LayerNorm}(\\hat{Z})) + \\hat{Z} \\end{aligned} \\tag{3}$$
+                        </p>
+                        <p>其中MSA采用交替的窗口自注意力（W-MSA）与移位窗口自注意力（SW-MSA）。以W-MSA为例，其注意力权重计算为：</p>
+                        <p style=\"text-align: center;\">
+                            $$\\text{Attention}(Q,K,V) = \\text{Softmax}(\\frac{QK^T}{\\sqrt{d}})V \\tag{4}$$
+                        </p>
+                        <p>$Q,K,V$ 为查询、键、值矩阵，$d$ 为特征维度。SW-MSA通过循环移位窗口打破局部限制，实现跨窗口信息交互。</p>
+
+                        <h3>3. 特征融合与重建</h3>
+                        <p>浅层与深层特征通过残差连接融合，重建高质量图像：</p>
+                        <p style=\"text-align: center;\">
+                            $$I_{HQ} = H_{rec}(F_0 + F_K) \\tag{5}$$
+                        </p>
+                        <p>其中 $H_{rec}$ 为任务自适应的重建模块（如PixelShuffle上采样）。</p>
+
+                        <h3>4. 损失函数</h3>
+                        <p>针对不同任务采用差异化损失：</p>
+                        <p>超分辨率任务使用L1损失：</p>
+                        <p style=\"text-align: center;\">
+                            $$\\mathcal{L}_{L1} = \\| I_{HQ} - I_{GT} \\|_1 \\tag{6}$$
+                        </p>
+                        <p>去噪与JPEG修复采用Charbonnier损失提升鲁棒性：</p>
+                        <p style=\"text-align: center;\">
+                            $$\\mathcal{L}_{charb} = \\sqrt{\\| I_{HQ} - I_{GT} \\|^2 + \\epsilon^2}, \\quad \\epsilon=10^{-3} \\tag{7}$$
+                        </p>
+                        <p>真实世界超分结合感知损失与对抗损失：</p>
+                        <p style=\"text-align: center;\">
+                            $$\\mathcal{L}_{total} = \\lambda_1 \\mathcal{L}_{pixel} + \\lambda_2 \\mathcal{L}_{perceptual} + \\lambda_3 \\mathcal{L}_{GAN} \\tag{8}$$
+                        </p>
+
+                        <hr>
+
+                        <h2>实验结果与分析</h2>
+                        <p>SwinIR在多项任务上实现突破：在Set5超分辨率基准上，×4放大任务达到32.73 dB PSNR，超越EDSR 0.31 dB；在Denoising任务中，$\sigma=25$ 噪声水平下PSNR达31.42，较DnCNN提升0.85 dB。消融实验表明，RSTB中的卷积增强模块贡献显著——移除后PSNR下降0.35 dB，验证了CNN归纳偏置对Transformer的互补价值。更重要的是，同一骨干网络适配超分、去噪、JPEG修复等任务时均达到SOTA水平，证明了架构的泛化能力。</p>
+
+                        <hr>
+
+                        <h2>结语</h2>
+                        <p>SwinIR的成功揭示了底层视觉任务的新范式：Transformer提供全局建模能力，CNN注入局部归纳偏置，二者融合优于单一架构。其层次化注意力机制（公式4）与残差特征融合（公式5）的设计哲学，为后续工作（如SwinIRv2）奠定基础。尽管计算开销仍高于轻量CNN，但SwinIR证明了“融合优于替代”的架构设计原则——在深度学习中，平衡局部与全局、内容相关与平移不变性，方能释放模型最大潜力。</p>
                     </div>
                 `.trim()
             }
