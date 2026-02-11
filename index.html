@@ -170,22 +170,21 @@
                         <details class="about-item">
                             <summary>算法工程师 — 滴滴 花小猪打车策略算法团队（2025.10-2026.2）</summary>
                             <div class="about-body">
-                                <h4>司乘取消判责大模型训练优化</h4>
-                                <p>（此处已折叠，详情隐藏）</p>
+                                <p>完成了大模型判责工作和多任务司乘取消特征交叉工作</p>
                             </div>
                         </details>
 
                         <details class="about-item">
                             <summary>大模型算法工程师 — 阿里 ICBU搜索算法团队（2025.6-2025.9）</summary>
                             <div class="about-body">
-                                <p>（此处已折叠，详情隐藏）</p>
+                                <p>完成了多语言大模型预训练和后训练工作</p>
                             </div>
                         </details>
 
                         <details class="about-item">
                             <summary>大模型算法工程师 — 华为 AI算法部（ICT）（2025.1-2025.6）</summary>
                             <div class="about-body">
-                                <p>（此处已折叠，详情隐藏）</p>
+                                <p>完成了DeepDive和大模型工具调用强化工作</p>
                             </div>
                         </details>
 
@@ -305,6 +304,112 @@
                             <li>日常生活思考</li>
                         </ul>
                         <p>感谢你的访问！</p>
+                    </div>
+                `.trim()
+            },
+            {
+                "id": 2,
+                "title": "解密 OneTrans：推荐系统背后的“读心术”",
+                "excerpt": "你是否好奇为什么 App 总能猜到你想点什么，或者你要去哪里？这背后离不开像 OneTrans 这样的智能模型。",
+                "date": "2026-02-11",
+                "category": "工程",
+                "tags": ["工程", "OneTrans", "推荐系统"],
+                "content": `
+                    <div class="blog-content">
+                        <blockquote>
+                            <p><strong>导读</strong>：你是否好奇为什么 App 总能猜到你想点什么，或者你要去哪里？这背后离不开像 <code>OneTrans</code> 这样的智能模型。本文将抛开复杂的数学公式，带你深入浅出地了解这个处理海量用户行为数据的“大脑”是如何工作的。</p>
+                        </blockquote>
+                        <hr>
+
+                        <h2>一、 它是做什么的？</h2>
+                        <p>简单来说，<strong>OneTrans</strong> 是一个“预测大师”。在技术领域，它主要用于<strong>点击率预估 (CTR Prediction)</strong>。</p>
+                        <p>想象一下你正在使用一个打车软件：</p>
+                        <ul>
+                            <li><strong>固定属性 (NS)</strong>：你是谁？（性别、年龄、会员等级）</li>
+                            <li><strong>历史行为 (Seq)</strong>：你过去几周去过哪？总是几点出门？</li>
+                            <li><strong>当前情境 (Cur)</strong>：现在几点了？外面下雨了吗？</li>
+                        </ul>
+                        <p>OneTrans 的任务就是把这些乱七八糟的信息综合起来，迅速判断出：“给你推荐这个目的地，你会点击吗？”或者“这个司机接这单的可能性有多大？”</p>
+
+                        <h2>二、 它的核心原理：像“大厨”一样处理数据</h2>
+                        <p>如果不看代码，我们可以把 OneTrans 的工作流程比作一位大厨做菜：</p>
+
+                        <h3>1. 备菜与切配 (Embedding & Tokenizer)</h3>
+                        <p>原始数据是五花八门的：有的数据是数字（距离 3.5km），有的是文字标签（车型：SUV）。</p>
+                        <ul>
+                            <li><strong>Embedding（向量化）</strong>：模型把这些不同类型的数据全部转化成计算机喜欢的“数字列表”（向量）。</li>
+                            <li><strong>Tokenizer（分词器）</strong>：这就像切菜。把胡萝卜、土豆、肉都切成统一大小的“丁”。无论原来的特征长什么样，经过这层处理，它们都变成了标准规格的积木块，才能被放进锅里一起炒。</li>
+                        </ul>
+
+                        <h3>2. 烹饪与融合 (Transformer Backbone)</h3>
+                        <p>这是最关键的一步。OneTrans 使用了和 ChatGPT 同源的核心技术——<strong>Transformer</strong>。</p>
+                        <p>在此之前，很多模型只是把数据“拌”在一起（简单的加减乘除）。而 Transformer 允许数据之间进行深度的“化学反应”。</p>
+                        <ul>
+                            <li>比如它能发现：“下雨天” + “周五晚高峰” + “历史常去酒吧” = <strong>极大概率要去三里屯</strong>。这种隐秘的关联，是单看某一个特征看不出来的。</li>
+                        </ul>
+
+                        <h3>3. 出锅 (Head)</h3>
+                        <p>经过层层分析，模型最后会输出一个分数（比如 0.85），代表它认为这件事发生的概率有 85%。</p>
+
+                        <hr>
+
+                        <h2>三、 这个家族的“三兄弟”</h2>
+                        <p>在 <code>onetrans_copy.py</code> 文件中，其实藏着 OneTrans 家族的三个不同版本，它们各有专长：</p>
+                        
+                        <ol>
+                            <li>
+                                <strong>极简版 (OneTransSimple)</strong>
+                                <ul>
+                                    <li><strong>特点</strong>：是个急性子，只看眼前的基本信息（非序列特征），不翻旧账（不处理历史序列）。</li>
+                                    <li><strong>用途</strong>：适合那些不需要太复杂判断，或者算力有限的简单场景。</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>标准版 (OneTransV2 / Unified)</strong>
+                                <ul>
+                                    <li><strong>特点</strong>：这是家族的主力军。它不仅看现在，还非常细致地分析你的历史行为。最厉害的是它练就了一门<strong>“金字塔”绝学</strong>（下面会详细讲），能飞快地处理长长的历史记录。</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <strong>全能版 (OneTransV3 / Sid)</strong>
+                                <ul>
+                                    <li><strong>特点</strong>：最强形态。它不仅能预测一件事，还能同时预测多件事（多任务学习）。而且它引入了“门控机制”（像安检门一样，过滤掉无效信息），还能专门处理像 Session ID 这种特定的会话信息。</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <hr>
+
+                        <h2>四、 黑科技揭秘</h2>
+                        <p>为什么 OneTrans 能做到又快又准？因为它有几个“独门绝技”：</p>
+
+                        <h3>1. 防剧透机制 (Causal Mask)</h3>
+                        <p>在学习你的历史行为时，模型必须严格遵守时间顺序。</p>
+                        <ul>
+                            <li><strong>原理</strong>：当它在分析你“上周三”的行为时，绝对不能偷看你“上周四”做了什么。</li>
+                            <li><strong>比喻</strong>：这就像看连载侦探小说，你只能根据前几章推断凶手，不能直接翻到大结局看答案。这保证了模型学会的是“预测未来”，而不是“死记硬背”。</li>
+                        </ul>
+
+                        <h3>2. 金字塔收缩 (Pyramid Shrinking) —— 核心亮点</h3>
+                        <p>这是 OneTrans V2 版本中最精彩的设计。</p>
+                        <p>处理几百条历史记录是非常消耗算力的。OneTrans 采用了一种聪明的偷懒方法：</p>
+                        <ul>
+                            <li><strong>第一层</strong>：它事无巨细，把原本长长的历史记录全部看一遍。</li>
+                            <li><strong>中间层</strong>：它觉得不需要看那么细了，于是把相邻的信息合并，扔掉一半不重要的细节。</li>
+                            <li><strong>深层</strong>：它只看剩下的“精华”。</li>
+                        </ul>
+                        <p><strong>这就像你看一本书</strong>：先逐字读（底层），然后概括段落大意（中层），最后只总结中心思想（顶层）。原本厚厚的信息，像金字塔一样越往上越少，越精炼。这让它的运行速度大大提升。</p>
+
+                        <h3>3. 业务定制 (Hard-coding)</h3>
+                        <p>代码中还有一些看似奇怪的数字（比如 <code>clamp(0, 375)</code>）。</p>
+                        <ul>
+                            <li>这说明 OneTrans 不是一个通用的书呆子，它是<strong>为特定业务（看似是出行/打车领域）量身定做的</strong>。它知道某种距离或费用不可能超过某个范围，提前就把异常数据“修剪”好了。</li>
+                        </ul>
+
+                        <hr>
+
+                        <h2>五、 总结</h2>
+                        <p><code>OneTrans</code> 是一个聪明的深度学习模型。它既有 Transformer 的深邃思考能力，能捕捉复杂的用户行为模式；又有“金字塔收缩”这样的工程智慧，解决了算力瓶颈。它是推荐系统背后，那个默默理解你、为你服务的“数字大脑”。</p>
                     </div>
                 `.trim()
             }
