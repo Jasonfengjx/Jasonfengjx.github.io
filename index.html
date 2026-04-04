@@ -714,6 +714,132 @@
                         <p><i>本文攻略基于标准生存模式，世界设置未修改季节时长。DLC（巨人的统治/海难/哈姆雷特）机制略有差异，但核心节奏相通。</i></p>
                     </div>
                 `.trim()
+            },
+            {
+                "id": 5,
+                "title": "🎬 视频自动总结笔记工具",
+                "excerpt": "面向知识型视频的自动化笔记生成工具，实现“输入链接 → 结构化笔记输出”的闭环，适合课程、讲座、教程、评测等长视频内容的快速回顾与复盘。",
+                "date": "2026-04-04",
+                "category": "工程",
+                "tags": ["工程", "视频总结", "ASR", "LLM"],
+                "content": `
+                    <div class="blog-content">
+                        <h1>🎬 视频自动总结笔记工具</h1>
+                        <p>一款面向知识型视频的自动化笔记生成工具，实现“输入链接 → 结构化笔记输出”的闭环。适合课程、讲座、教程、评测等长视频内容的快速回顾与复盘。</p>
+                        <p>GitHub：<a href="https://github.com/Jasonfengjx/video_summary/tree/main" target="_blank" rel="noopener noreferrer">https://github.com/Jasonfengjx/video_summary/tree/main</a></p>
+                        <p>功能已实现完成。主要修改：</p>
+                        <ol>
+                            <li>新增 <code>playlist_fetcher.py</code> - 获取系列/合集/频道视频列表</li>
+                            <li>修改 <code>main.py</code> - 支持批量处理系列视频</li>
+                        </ol>
+
+                        <h2>使用方法</h2>
+                        <pre><code>python src/main.py --url "https://example.com/video/abc123"
+python src/main.py --playlist "https://example.com/playlist/collection?id=3173076"</code></pre>
+                        <p>说明：第二条为系列视频示例（共 94 个视频）。</p>
+
+                        <h2>输出结构</h2>
+                        <ul>
+                            <li>每个视频的总结保存在 <code>downloads/{video_id}/summary.md</code></li>
+                            <li>系列视频统一保存在 <code>downloads/series_{id}/</code> 目录</li>
+                            <li>生成 <code>_index.md</code> 索引文件汇总所有视频</li>
+                        </ul>
+
+                        <h2>✨ 核心能力</h2>
+                        <ul>
+                            <li>🚀 <strong>一键流程</strong>：下载 → 音频抽取 → 转写 → 结构化总结 → 可选关键帧截图。</li>
+                            <li>🧠 <strong>结构化笔记</strong>：输出 Markdown，包含概览、要点、洞察、行动建议等板块。</li>
+                            <li>⏱️ <strong>时间戳关联</strong>：总结内容引导输出标准时间戳，便于回溯原片段。</li>
+                            <li>🧩 <strong>可配置</strong>：通过 <code>config.yaml</code> 控制下载、ASR、LLM、截图与清理策略。</li>
+                            <li>📦 <strong>统一产物归档</strong>：按视频 ID 组织目录，避免文件冲突。</li>
+                        </ul>
+
+                        <h2>🧱 目录结构</h2>
+                        <p>产物统一存放在 <code>downloads/</code> 下，以视频 ID 隔离：</p>
+                        <ul>
+                            <li>meta.json：标题、作者、发布时间等元数据</li>
+                            <li>video.mp4：原视频（可选保留）</li>
+                            <li>audio.wav：音频中间产物（可选保留）</li>
+                            <li>transcript.json / transcript.srt：转写结果</li>
+                            <li>assets/：截图素材</li>
+                            <li>summary.md：最终笔记</li>
+                        </ul>
+
+                        <h2>🛠️ 依赖</h2>
+                        <ul>
+                            <li>Python 3.9+</li>
+                            <li>ffmpeg</li>
+                            <li>yt-dlp</li>
+                            <li>Whisper（本地 ASR）</li>
+                            <li>LLM API（默认对接火山引擎兼容 OpenAI 协议）</li>
+                        </ul>
+
+                        <h2>⚙️ 配置说明</h2>
+                        <p>主配置文件在根目录 <code>config.yaml</code>：</p>
+                        <ul>
+                            <li>download：下载格式、代理、cookies、重试等</li>
+                            <li>audio：采样率、声道、输出格式</li>
+                            <li>asr：引擎、模型、语言、缓存策略</li>
+                            <li>llm：API 地址、模型名、Prompt 路径</li>
+                            <li>frames：是否截图、最大数量、格式</li>
+                            <li>cleanup：是否保留视频/音频</li>
+                        </ul>
+
+                        <p>API Key 支持两种方式：</p>
+                        <ol>
+                            <li>环境变量（默认读取 <code>DASHSCOPE_API_KEY</code>，可在 <code>config.yaml</code> 中改名）</li>
+                            <li>根目录 <code>cmd</code> 文件中的最后一条 api 配置（便于本地测试）</li>
+                        </ol>
+
+                        <h2>▶️ 快速使用</h2>
+                        <ol>
+                            <li>安装依赖：<code>pip install -r requirements.txt</code></li>
+                            <li>准备 API Key（二选一）：
+                                <ul>
+                                    <li>方式 A：<code>export DASHSCOPE_API_KEY=你的Key</code></li>
+                                    <li>方式 B：在根目录 <code>cmd</code> 文件中配置最后一条 api</li>
+                                </ul>
+                            </li>
+                            <li>运行：<code>python src/main.py</code></li>
+                            <li>自定义参数（可选）：<code>python src/main.py --url --language zh --model deepseek-v3.2</code></li>
+                        </ol>
+                        <p>说明：</p>
+                        <ul>
+                            <li>未提供链接时会使用内置测试链接</li>
+                            <li>支持手动指定链接、语言、模型、是否截图</li>
+                        </ul>
+                        <p>输出完成后，<code>summary.md</code> 即为最终笔记。</p>
+
+                        <h2>🧩 关键帧截图说明</h2>
+                        <p>优先使用 ffmpeg 截图；若遇到 AV1 等解码问题，会自动回退到 OpenCV 读取视频帧。若仍失败，可在运行时关闭截图功能。</p>
+
+                        <h2>🧭 设计原则</h2>
+                        <ul>
+                            <li>✅ 结构化输出，强调可检索与复用</li>
+                            <li>✅ 保留核心观点、流程步骤、关键术语</li>
+                            <li>✅ 通过时间戳建立“总结 → 原片段”映射</li>
+                            <li>❌ 避免无依据的模型幻觉</li>
+                        </ul>
+
+                        <h2>📈 适用场景</h2>
+                        <ul>
+                            <li>学习：课程、讲座、公开课</li>
+                            <li>复盘：行业分享、产品发布</li>
+                            <li>内容创作：灵感提炼、资料归档</li>
+                        </ul>
+
+                        <h2>🗺️ Roadmap</h2>
+                        <ul>
+                            <li>多 ASR 后端切换与热词支持</li>
+                            <li>批量队列与并发处理</li>
+                            <li>GUI 或 Web 面板</li>
+                            <li>笔记同步到 Notion / Obsidian</li>
+                        </ul>
+
+                        <hr>
+                        <p>如需更强的总结风格定制，可直接修改 <code>prompts/summary_prompt.txt</code>。</p>
+                    </div>
+                `.trim()
             }
         ];
     </script>
